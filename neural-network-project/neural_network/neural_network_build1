@@ -1,0 +1,90 @@
+# coding:UTF-8
+import math
+import matplotlib.pyplot as plt
+
+# シグモイド関数
+def sigmoid(a):
+     return 1.0 / (1.0 + math.exp(-a))
+
+# ニューロン
+class Neuron:
+    input_sum = 0.0
+    output = 0.0
+
+    def setInput(self,inp):
+        self.input_sum += inp
+
+    def reset(self):
+        self.input_sum = 0
+        self.output = 0
+
+
+    def getOutput(self):
+        self.output = sigmoid(self.input_sum)
+        return self.output
+
+# ニューラルネットワーク
+class NeuralNetwork:
+    # 重み        N=入力層, T=中間層, S=出力層
+    # 入力層と中間層の間の重みを格納する二重のリスト
+    w_im = [[0.496, 0.512], [-0.501, 0.998], [0.498, -0.502]]  #[[N層最初のニューロンとT層各ニューロンの間の重みの値],[N層の２番目のニューロンとT層の各ニューロンの間の重みの値],[N層のバイアスとT層の各要素の間の重みの値]]
+    # 中間層と出力層の間の重みを格納する一重のリスト
+    w_mo = [0.121, -0.4996, 0.200]                              #[T層の最初のニューロンとS層のニューロンとの間の重みの値, T層の２番目のニューロンとS層のニューロンとの間の重みの値,T層のバイアスとS層の各要素の間の重み]
+
+    #各層の宣言
+        # 入力層
+    input_layer = [0.0, 0.0, 1.0]               #[二つのニューロンと１つのバイアス](入力値がそのまま入るので数値をそのまま入れる)
+        # 中間層
+    middle_layer = [Neuron(), Neuron(), 1.0]    #[ニューロンクラスを使って作ったインスタンスが2つ、バイアスが1つ]
+        # 出力層
+    output_layer = Neuron()                     #[ニューロンのインスタンスをリストにはせずにそのまま入れる]
+
+
+
+    # 実行
+    def commit(self,input_data):
+       self.neuron.reset()
+
+       bias = 1.0
+
+       self.neuron.setInput(input_data[0] * self.w[0])
+       self.neuron.setInput(input_data[1] * self.w[1])
+       self.neuron.setInput(bias * self.w[2])
+       return self.neuron.getOutput()
+
+# 基準点(データの範囲を0.0-0.1の範囲に収めるため)
+refer_point_0 = 34.5
+refer_point_1 = 137.5
+
+# ファイルの読み込み
+trial_data = []
+trial_data_file = open("trial_data", "r")
+for line in trial_data_file:
+    line = line.rstrip().split(",")
+    #                       基準点  　ー　　　緯度　　　　　　　　基準点      ー   経度
+    trial_data.append([float(line[0]) - refer_point_0, float(line[1]) - refer_point_1])
+trial_data_file.close()
+
+
+
+# ニューラルネットワークのインスタンス
+neural_network = NeuralNetwork()
+
+# 実行
+position_tokyo = [[], []]
+position_kanagawa = [[], []]
+for data in trial_data:
+   if neural_network.commit(data) < 0.5:
+       position_tokyo[0].append(data[1] + refer_point_1)
+       position_tokyo[1].append(data[0] + refer_point_0)
+   else:
+       position_kanagawa[0].append(data[1] + refer_point_1)
+       position_kanagawa[1].append(data[0] + refer_point_0)
+
+# プロット
+#   scatter(散布図を書く際用いる）, 散布図を描画する際はlegend()が必要
+plt.scatter(position_tokyo[0], position_tokyo[1], c="red", label="Tokyo", marker="+")
+plt.scatter(position_kanagawa[0], position_kanagawa[1], c="blue", label="Kanagawa", marker="+")
+
+plt.legend()
+plt.show()

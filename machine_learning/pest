@@ -1,0 +1,30 @@
+import random
+
+def bays(a,b,c,d):
+    full = a + b + c + d
+    pest = a + c
+    dead = a + b
+    full_thermo = pest / full * a / pest
+    full_pest = a / full
+    full_dead = dead / full * a / dead
+
+    return full_thermo == full_pest == full_dead
+
+
+
+e = bays(17, 6, 4, 8)
+
+
+
+
+prob_a = float(0.3 / (0.3 + 0.3 * 0.6))
+
+print prob_a
+
+
+a = [random.uniform(34.0,36.0),random.uniform(135.0,139.0)]
+num = 1
+while num < 10:
+    print [random.uniform(34.0,36.0),random.uniform(135.0,139.0)]
+    num += 1
+
